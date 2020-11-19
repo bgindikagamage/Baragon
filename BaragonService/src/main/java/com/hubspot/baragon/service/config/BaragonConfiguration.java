@@ -21,6 +21,7 @@ import io.dropwizard.Configuration;
 public class BaragonConfiguration extends Configuration {
   public static final String DEFAULT_AGENT_REQUEST_URI_FORMAT = "%s/request/%s";
   public static final String DEFAULT_AGENT_BATCH_REQUEST_URI_FORMAT = "%s/batch";
+  public static final String DEFAULT_AGENT_PURGE_CACHE_REQUEST_URI_FORMAT = "%s/purgeCache/%s";
 
   @JsonProperty("zookeeper")
   @NotNull
@@ -105,8 +106,13 @@ public class BaragonConfiguration extends Configuration {
   @JsonProperty
   private long expireResolveCacheAfterDays = 30;
 
+
+  @JsonProperty("agentPurgeCacheRequestUriFormat")
+  private String agentPurgeCacheRequestUriFormat = DEFAULT_AGENT_PURGE_CACHE_REQUEST_URI_FORMAT;
+
   @JsonProperty("kubernetes")
   private KubernetesConfiguration kubernetesConfiguration = new KubernetesConfiguration();
+
 
   private int maxConcurrentRequestsPerAgent = 3;
 
@@ -286,12 +292,21 @@ public class BaragonConfiguration extends Configuration {
     this.expireResolveCacheAfterDays = expireResolveCacheAfterDays;
   }
 
+
+  public String getAgentPurgeCacheRequestUriFormat() {
+    return agentPurgeCacheRequestUriFormat;
+  }
+
+  public void setAgentPurgeCacheRequestUriFormat(String agentPurgeCacheRequestUriFormat) {
+    this.agentPurgeCacheRequestUriFormat = agentPurgeCacheRequestUriFormat;
+
   public KubernetesConfiguration getKubernetesConfiguration() {
     return kubernetesConfiguration;
   }
 
   public void setKubernetesConfiguration(KubernetesConfiguration kubernetesConfiguration) {
     this.kubernetesConfiguration = kubernetesConfiguration;
+
   }
 
   public int getMaxConcurrentRequestsPerAgent() {

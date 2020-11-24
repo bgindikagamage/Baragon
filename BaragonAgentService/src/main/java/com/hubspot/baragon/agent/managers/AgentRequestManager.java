@@ -198,13 +198,14 @@ public class AgentRequestManager {
         case REVERT:
           serviceId = request.getLoadBalancerService().getServiceId();
           return revert(request, maybeOldService, existingUpstreams.computeIfAbsent(serviceId, (key) -> new ArrayList<>()), delayReload, batchItemNumber);
-        case UPDATE_AND_PURGE_CACHE:
-          serviceId = request.getLoadBalancerService().getServiceId();
-          purgeCache(maybeOldService.or(request.getLoadBalancerService()).getServiceId());
-          return apply(request, maybeOldService, existingUpstreams.computeIfAbsent(serviceId, (key) -> new ArrayList<>()), delayReload, batchItemNumber);
         default:
           serviceId = request.getLoadBalancerService().getServiceId();
-          return apply(request, maybeOldService, existingUpstreams.computeIfAbsent(serviceId, (key) -> new ArrayList<>()), delayReload, batchItemNumber);
+          Response response = apply(request, maybeOldService, existingUpstreams.computeIfAbsent(serviceId, (key) -> new ArrayList<>()), delayReload, batchItemNumber);
+          if (request.isPurgeCache()){
+            purgeCache(maybeOldService.or(request.getLoadBalancerService()).getServiceId());
+          }
+          return response;
+
       }
     } catch (LockTimeoutException e) {
       LOG.error("Couldn't acquire agent lock for {} in {} ms", requestId, agentLockTimeoutMs, e);
@@ -245,14 +246,6 @@ public class AgentRequestManager {
       }
     }
     return Response.ok(result).build();
-  }
-
-
-  public static String getServiceBasePathWithoutLeadingSlash(String path){
-    if (path.startsWith("/")){
-      path = path.replaceFirst("/", "");
-    }
-    return path;
   }
 
   public Response purgeCache(String serviceId) {

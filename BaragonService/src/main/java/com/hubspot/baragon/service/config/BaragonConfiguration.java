@@ -64,6 +64,8 @@ public class BaragonConfiguration extends Configuration {
   private AuthConfiguration authConfiguration = new AuthConfiguration();
 
   @JsonProperty("purgeCache")
+  @NotNull
+  @Valid
   private PurgeCacheConfiguration purgeCacheConfiguration;
 
   @JsonProperty("hostname")
